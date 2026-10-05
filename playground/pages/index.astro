@@ -81,9 +81,10 @@ const navLinks = site.nav ?? [];
     <Solutions
         id="solutions"
         title="Two ways to work together"
-        subtitle="Cards can carry a badge, a bullet list, and their own call to action."
+        subtitle="Cards can carry an icon, a badge, a bullet list, and their own call to action."
         items={[
             {
+                icon: 'bolt',
                 badge: 'Most popular',
                 badgeTone: 'info',
                 title: 'One-off repair',
@@ -92,12 +93,18 @@ const navLinks = site.nav ?? [];
                 cta: { href: '#contact', label: 'Book a repair', variant: 'secondary' },
             },
             {
+                icon: 'clock',
                 badge: 'Save 20%',
                 badgeTone: 'warning',
                 title: 'Planned maintenance',
                 text: 'Ongoing cover that stops small faults becoming large ones.',
                 bullets: ['Annual inspection', 'Priority callouts', 'No call-out fee'],
                 cta: { href: '#contact', label: 'Start a plan', variant: 'primary' },
+            },
+            {
+                icon: '24',
+                title: 'Emergency callout',
+                text: 'Cards fall back to plain text when the icon is not in the registry.',
             },
         ]} />
 

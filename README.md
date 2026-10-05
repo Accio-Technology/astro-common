@@ -204,8 +204,9 @@ arbitrary text.
 
 Card grid. `title` and `items` required; `subtitle`, `highlightFirst`, `id`
 optional. Items are
-`{ badge?, badgeTone?, title, text, bullets?, cta? }`, where `badgeTone` is
-`'info' | 'warning' | 'neutral'`.
+`{ icon?, badge?, badgeTone?, title, text, bullets?, cta? }`, where `badgeTone`
+is `'info' | 'warning' | 'neutral'`. `icon` is a key from the icon registry or
+arbitrary text, matching `FeatureItem.icon`.
 
 ### `Comparison.astro`
 

@@ -5,6 +5,7 @@
  */
 import '../styles/theme.css';
 import Icon from './Icon.astro';
+import { hasIcon } from './icons/registry';
 import type { SolutionCard } from './types';
 
 interface Props {
@@ -31,6 +32,15 @@ const { id, title, subtitle, items, highlightFirst = false } = Astro.props;
                 items.map((item, index) => (
                     <div class="solution-card" data-highlight={highlightFirst && index === 0 ? '' : undefined}>
                         <div class="solution-body">
+                            {item.icon && (
+                                <div class="solution-icon">
+                                    {hasIcon(item.icon) ? (
+                                        <Icon name={item.icon} size={24} />
+                                    ) : (
+                                        <span class="solution-icon-text">{item.icon}</span>
+                                    )}
+                                </div>
+                            )}
                             {item.badge && (
                                 <span class="solution-badge" data-tone={item.badgeTone ?? 'info'}>
                                     {item.badge}
@@ -116,6 +126,20 @@ const { id, title, subtitle, items, highlightFirst = false } = Astro.props;
         font-weight: 800;
         letter-spacing: 0.05em;
         text-transform: uppercase;
+    }
+
+    .solution-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        margin-bottom: 20px;
+        background: var(--gradient-brand);
+        border-radius: var(--radius-md);
+        color: var(--bg-surface);
+        font-size: 20px;
+        font-weight: 800;
     }
 
     .solution-badge[data-tone='info'] {

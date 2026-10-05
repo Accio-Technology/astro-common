@@ -76,6 +76,8 @@ export interface FeatureItem {
 }
 
 export interface SolutionCard {
+    /** Key of an icon in components/icons, or raw text. Rendered above the title. */
+    icon?: string;
     badge?: string;
     badgeTone?: 'info' | 'warning' | 'neutral';
     title: string;
