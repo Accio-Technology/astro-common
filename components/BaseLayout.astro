@@ -1,0 +1,73 @@
+---
+/**
+ * Document shell: <html>, <head> via Seo.astro, optional Header/Footer, and a
+ * default slot for page content.
+ *
+ * `header` and `footer` are opt-in and omitted when omitted — pass the objects
+ * you want rendered, or `null` to suppress. For full control over page chrome,
+ * compose Seo.astro inside your own <html> instead.
+ */
+import '../styles/theme.css';
+import Seo from './Seo.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import type { Cta, FooterColumn, ImageSource, NavLink, SiteConfig, SocialLink } from './types';
+
+interface HeaderSlot {
+    logo: ImageSource;
+    logoAlt?: string;
+    logoHref?: string;
+    /** Falls back to site.nav when omitted. */
+    navLinks?: NavLink[];
+    cta?: Cta;
+}
+
+interface FooterSlot {
+    businessName: string;
+    tagline?: string;
+    columns?: FooterColumn[];
+    social?: SocialLink[];
+    showYear?: boolean;
+}
+
+interface Props {
+    site: SiteConfig;
+    title: string;
+    description?: string;
+    ogImage?: ImageSource;
+    noindex?: boolean;
+    jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+    turnstile?: boolean;
+    titleTemplate?: string;
+    header?: HeaderSlot | null;
+    footer?: FooterSlot | null;
+    bodyClass?: string;
+}
+
+const { site, header = null, footer = null, bodyClass, ...seo } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={site.locale ?? 'en'}>
+    <head>
+        <Seo {site} {...seo} />
+        <slot name="head" />
+    </head>
+    <body class={bodyClass}>
+        {
+            header && (
+                <Header
+                    logo={header.logo}
+                    logoAlt={header.logoAlt ?? site.name}
+                    logoHref={header.logoHref}
+                    navLinks={header.navLinks ?? site.nav ?? []}
+                    cta={header.cta}
+                />
+            )
+        }
+        <slot />
+        {footer && <Footer {...footer} />}
+
+        <slot name="scripts" />
+    </body>
+</html>

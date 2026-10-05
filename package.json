@@ -1,0 +1,27 @@
+{
+    "name": "astro-common",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "description": "Reusable Astro components for static business sites deployed on Cloudflare.",
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "check": "astro check",
+        "lint": "eslint .",
+        "verify": "npm run check && npm run lint"
+    },
+    "peerDependencies": {
+        "astro": ">=5.0.0"
+    },
+    "devDependencies": {
+        "@astrojs/check": "^0.9.10",
+        "@eslint/js": "^10.0.1",
+        "astro": "^7.3.5",
+        "eslint": "^10.12.0",
+        "eslint-plugin-astro": "^3.2.1",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.71.1"
+    }
+}

@@ -1,0 +1,264 @@
+---
+/**
+ * Contact form with a honeypot field and optional Cloudflare Turnstile.
+ *
+ * Rendered inert: scripts/contact-form.ts wires up submission, loading state,
+ * and the success/error regions via data attributes. No framework runtime needed.
+ *
+ * The endpoint, extra headers, and Turnstile requirement are all carried in
+ * data attributes, so this component contains no deployment-specific knowledge.
+ * Pair it with an API route in your site — this library ships no server code.
+ */
+import '../styles/theme.css';
+import Icon from './Icon.astro';
+
+interface Props {
+    /** Unique per page. Also prefixes field ids so two forms can coexist. */
+    id?: string;
+    /** Endpoint that receives the JSON POST. */
+    action?: string;
+    /** Extra request headers, e.g. a shared-secret style guard. */
+    requestHeaders?: Record<string, string>;
+    /** Public Turnstile site key. Empty or omitted disables the widget entirely. */
+    turnstileSiteKey?: string;
+    showSubject?: boolean;
+    submitLabel?: string;
+    loadingLabel?: string;
+    successMessage?: string;
+    subjectLabel?: string;
+    subjectPlaceholder?: string;
+    namePlaceholder?: string;
+    emailPlaceholder?: string;
+    messagePlaceholder?: string;
+    submitVariant?: 'primary' | 'secondary';
+}
+
+const {
+    id = 'contact',
+    action = '/api/contact',
+    requestHeaders,
+    turnstileSiteKey = '',
+    showSubject = true,
+    submitLabel = 'Send Message',
+    loadingLabel = 'Sending...',
+    successMessage = "Thank you! We'll be in touch soon.",
+    subjectLabel = 'Subject',
+    subjectPlaceholder = 'How can we help?',
+    namePlaceholder = 'Your name',
+    emailPlaceholder = 'your@email.com',
+    messagePlaceholder = 'Tell us about your project...',
+    submitVariant = 'primary',
+} = Astro.props;
+
+const turnstileEnabled = Boolean(turnstileSiteKey);
+const headersJson = JSON.stringify(requestHeaders ?? {});
+---
+
+<form
+    id={id}
+    class="contact-form"
+    data-contact-form
+    data-action={action}
+    data-headers={headersJson}
+    data-turnstile={turnstileEnabled ? 'required' : 'off'}
+    data-submit-label={submitLabel}
+    method="post"
+    action={action}
+    novalidate>
+    <div class="form-row">
+        <div class="form-field">
+            <label for={`${id}-name`}>Name</label>
+            <input
+                type="text"
+                id={`${id}-name`}
+                name="name"
+                required
+                placeholder={namePlaceholder}
+                autocomplete="name" />
+        </div>
+        <div class="form-field">
+            <label for={`${id}-email`}>Email</label>
+            <input
+                type="email"
+                id={`${id}-email`}
+                name="email"
+                required
+                placeholder={emailPlaceholder}
+                autocomplete="email" />
+        </div>
+    </div>
+
+    {
+        showSubject && (
+            <div class="form-field">
+                <label for={`${id}-subject`}>{subjectLabel}</label>
+                <input
+                    type="text"
+                    id={`${id}-subject`}
+                    name="subject"
+                    required
+                    placeholder={subjectPlaceholder}
+                />
+            </div>
+        )
+    }
+
+    <div class="form-field">
+        <label for={`${id}-message`}>Message</label>
+        <textarea id={`${id}-message`} name="message" required placeholder={messagePlaceholder} rows="5"></textarea>
+    </div>
+
+    {/* Honeypot: hidden from humans, tempting to bots. Must stay in the DOM. */}
+    <div class="form-honeypot" aria-hidden="true">
+        <label for={`${id}-company`}>Company</label>
+        <input type="text" id={`${id}-company`} name="company" tabindex="-1" autocomplete="off" />
+    </div>
+
+    {
+        turnstileEnabled && (
+            <div class="form-turnstile" data-turnstile-host data-sitekey={turnstileSiteKey} />
+        )
+    }
+
+    <button type="submit" class={`btn btn-${submitVariant} form-submit`} disabled={turnstileEnabled}>
+        <span data-submit-label>{submitLabel}</span>
+        <span class="form-loading" data-loading hidden aria-hidden="true">
+            <Icon name="bolt" size={20} class="form-spinner" />
+            {loadingLabel}
+        </span>
+    </button>
+
+    <p class="form-status form-status-ok" data-success hidden>{successMessage}</p>
+    <p class="form-status form-status-error" data-error hidden>
+        <span data-error-text></span>
+    </p>
+</form>
+
+<style>
+    .contact-form {
+        max-width: 640px;
+        margin: 0 auto;
+        text-align: left;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-field {
+        margin-bottom: 20px;
+    }
+
+    .form-field label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--form-label-color);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .form-field input,
+    .form-field textarea {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--form-field-bg);
+        border: 1px solid var(--form-field-border);
+        border-radius: var(--radius-sm);
+        color: var(--form-text);
+        font-size: 16px;
+        transition:
+            border-color 0.2s,
+            background-color 0.2s;
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+        color: var(--form-placeholder);
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus {
+        outline: none;
+        background: var(--form-field-bg);
+        border-color: var(--color-primary);
+    }
+
+    .form-field textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-honeypot {
+        position: absolute;
+        left: -9999px;
+        height: 0;
+        overflow: hidden;
+    }
+
+    .form-turnstile {
+        margin-bottom: 20px;
+        min-height: 0;
+    }
+
+    .form-submit {
+        width: 100%;
+        padding: 16px 36px;
+        font-size: 16px;
+    }
+
+    .form-loading {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-loading[hidden] {
+        display: none;
+    }
+
+    .form-spinner {
+        animation: form-spin 1s linear infinite;
+    }
+
+    @keyframes form-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .form-status {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .form-status[hidden] {
+        display: none;
+    }
+
+    .form-status-ok {
+        background: var(--form-ok-bg);
+        border: 1px solid var(--form-ok-border);
+        color: var(--form-ok-text);
+    }
+
+    .form-status-error {
+        background: var(--form-err-bg);
+        border: 1px solid var(--form-err-border);
+        color: var(--form-err-text);
+    }
+
+    @media (max-width: 868px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+    }
+</style>

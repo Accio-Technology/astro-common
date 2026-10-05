@@ -1,0 +1,151 @@
+---
+/**
+ * Site footer: copyright line, optional tagline, link columns, and social links.
+ * The current year is filled in client-side by scripts/nav.ts via [data-year].
+ */
+import '../styles/theme.css';
+import type { FooterColumn, SocialLink } from './types';
+
+interface Props {
+    /** Legal entity name shown in the copyright line. */
+    businessName: string;
+    tagline?: string;
+    columns?: FooterColumn[];
+    social?: SocialLink[];
+    showYear?: boolean;
+}
+
+const { businessName, tagline, columns = [], social = [], showYear = true } = Astro.props;
+---
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <p class="footer-legal">
+                    &copy; {showYear && <span data-year>{new Date().getFullYear()}</span>}
+                    {businessName}. All rights reserved.
+                </p>
+                {tagline && <p class="footer-tagline">{tagline}</p>}
+            </div>
+
+            {
+                columns.map((column) => (
+                    <div class="footer-column">
+                        <h4>{column.heading}</h4>
+                        <ul>
+                            {column.links.map((link) => (
+                                <li>
+                                    <a
+                                        href={link.href}
+                                        target={link.external ? '_blank' : undefined}
+                                        rel={link.external ? 'noopener noreferrer' : undefined}>
+                                        {link.label}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))
+            }
+        </div>
+
+        {
+            social.length > 0 && (
+                <ul class="footer-social">
+                    {social.map((link) => (
+                        <li>
+                            <a href={link.href} target="_blank" rel="noopener noreferrer">
+                                {link.label}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+    </div>
+</footer>
+
+<style>
+    .site-footer {
+        padding: 40px 0;
+        background: var(--color-dark);
+        border-top: 1px solid rgb(255 255 255 / 0.1);
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .footer-grid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+    }
+
+    .footer-legal {
+        margin-bottom: 0;
+    }
+
+    .footer-tagline {
+        color: var(--text-muted);
+    }
+
+    .footer-brand {
+        flex: 1 1 260px;
+    }
+
+    .footer-column h4 {
+        margin-bottom: 12px;
+        color: var(--text-on-dark);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .footer-column ul,
+    .footer-social {
+        list-style: none;
+    }
+
+    .footer-column li {
+        margin-bottom: 8px;
+    }
+
+    .footer-column a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .footer-column a:hover {
+        color: var(--text-on-dark);
+    }
+
+    .footer-social {
+        display: flex;
+        gap: 20px;
+        margin-top: 24px;
+    }
+
+    .footer-social a {
+        color: #64748b;
+        text-decoration: none;
+    }
+
+    .footer-social a:hover {
+        color: var(--text-on-dark);
+    }
+
+    @media (max-width: 868px) {
+        .footer-grid {
+            flex-direction: column;
+            gap: 24px;
+            text-align: center;
+        }
+
+        .footer-social {
+            justify-content: center;
+        }
+    }
+</style>

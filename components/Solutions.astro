@@ -1,0 +1,177 @@
+---
+/**
+ * Card grid for service tiers or "two paths" offers. Each card can carry a badge,
+ * a bullet list, and its own CTA.
+ */
+import '../styles/theme.css';
+import Icon from './Icon.astro';
+import type { SolutionCard } from './types';
+
+interface Props {
+    id?: string;
+    title: string;
+    subtitle?: string;
+    items: SolutionCard[];
+    /** Accent the first card. */
+    highlightFirst?: boolean;
+}
+
+const { id, title, subtitle, items, highlightFirst = false } = Astro.props;
+---
+
+<section class="solutions" id={id}>
+    <div class="container">
+        <div class="section-header">
+            <h2>{title}</h2>
+            {subtitle && <p>{subtitle}</p>}
+        </div>
+
+        <div class="solutions-grid">
+            {
+                items.map((item, index) => (
+                    <div class="solution-card" data-highlight={highlightFirst && index === 0 ? '' : undefined}>
+                        <div class="solution-body">
+                            {item.badge && (
+                                <span class="solution-badge" data-tone={item.badgeTone ?? 'info'}>
+                                    {item.badge}
+                                </span>
+                            )}
+                            <h3>{item.title}</h3>
+                            <p>{item.text}</p>
+                            {item.bullets && item.bullets.length > 0 && (
+                                <ul class="solution-bullets">
+                                    {item.bullets.map((bullet) => (
+                                        <li>
+                                            <Icon name="check" size={16} strokeWidth={3} />
+                                            <span>{bullet}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                        {item.cta && (
+                            <a
+                                href={item.cta.href}
+                                class={`btn btn-${item.cta.variant ?? 'primary'} btn-block`}
+                                target={item.cta.external ? '_blank' : undefined}
+                                rel={item.cta.external ? 'noopener noreferrer' : undefined}>
+                                {item.cta.label}
+                            </a>
+                        )}
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .solutions {
+        padding: var(--section-padding) 0;
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .solutions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+        gap: 32px;
+        margin-top: 40px;
+    }
+
+    .solution-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 40px;
+        background: var(--bg-page);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-xl);
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+    }
+
+    .solution-card:hover {
+        transform: translateY(-4px);
+        border-color: #bfdbfe;
+        box-shadow: var(--shadow-card);
+    }
+
+    .solution-card[data-highlight] {
+        background: var(--bg-surface);
+        border-color: #bae6fd;
+        box-shadow: var(--shadow-card);
+    }
+
+    .solution-badge {
+        display: inline-block;
+        width: fit-content;
+        margin-bottom: 16px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .solution-badge[data-tone='info'] {
+        background: var(--tone-positive-surface);
+        color: var(--tone-positive-text);
+    }
+
+    .solution-badge[data-tone='warning'] {
+        background: var(--tone-warning-surface);
+        color: var(--tone-warning-text);
+    }
+
+    .solution-badge[data-tone='neutral'] {
+        background: var(--tone-neutral-surface);
+        color: var(--tone-neutral-text);
+    }
+
+    .solution-card h3 {
+        margin-bottom: 12px;
+        color: var(--color-dark);
+        font-size: 24px;
+    }
+
+    .solution-card p {
+        margin-bottom: 24px;
+        color: var(--text-body);
+        font-size: 15px;
+    }
+
+    .solution-bullets {
+        list-style: none;
+    }
+
+    .solution-bullets li {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        color: var(--text-strong);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .solution-bullets svg {
+        flex-shrink: 0;
+        margin-top: 3px;
+        color: var(--color-success);
+    }
+
+    @media (max-width: 868px) {
+        .solution-card {
+            padding: 24px;
+        }
+
+        .solution-card h3 {
+            font-size: 20px;
+        }
+    }
+</style>

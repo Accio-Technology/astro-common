@@ -1,0 +1,209 @@
+---
+/**
+ * Landing hero: eyebrow tag, headline, supporting copy, up to two CTAs, and an
+ * optional stats strip. Supply your own visual with `<Hero>`'s `visual` slot.
+ */
+import '../styles/theme.css';
+import type { Cta, Stat } from './types';
+
+interface Props {
+    id?: string;
+    /** Small pill above the headline. */
+    tag?: string;
+    title: string;
+    subhead?: string;
+    primaryCta?: Cta;
+    secondaryCta?: Cta;
+    stats?: Stat[];
+    /** "left" gives a two-column layout when a visual slot is present. */
+    align?: 'left' | 'center';
+}
+
+const { id, tag, title, subhead, primaryCta, secondaryCta, stats = [], align = 'left' } = Astro.props;
+
+const hasVisual = Astro.slots.has('visual');
+const hasStats = stats.length > 0;
+const twoColumn = hasVisual && align === 'left';
+---
+
+<section class="hero" id={id} data-align={align} data-two-column={twoColumn || undefined}>
+    <div class="container">
+        <div class="hero-grid">
+            <div class="hero-copy">
+                {tag && <p class="hero-tag">{tag}</p>}
+                <h1>{title}</h1>
+                {subhead && <p class="hero-subhead">{subhead}</p>}
+
+                {
+                    (primaryCta || secondaryCta) && (
+                        <div class="hero-ctas">
+                            {primaryCta && (
+                                <a
+                                    href={primaryCta.href}
+                                    class={`btn btn-${primaryCta.variant ?? 'primary'}`}
+                                    target={primaryCta.external ? '_blank' : undefined}
+                                    rel={primaryCta.external ? 'noopener noreferrer' : undefined}>
+                                    {primaryCta.label}
+                                </a>
+                            )}
+                            {secondaryCta && (
+                                <a
+                                    href={secondaryCta.href}
+                                    class={`btn btn-${secondaryCta.variant ?? 'secondary'}`}
+                                    target={secondaryCta.external ? '_blank' : undefined}
+                                    rel={secondaryCta.external ? 'noopener noreferrer' : undefined}>
+                                    {secondaryCta.label}
+                                </a>
+                            )}
+                        </div>
+                    )
+                }
+
+                {
+                    hasStats && (
+                        <dl class="hero-stats">
+                            {stats.map((stat) => (
+                                <div class="hero-stat">
+                                    <dt>{stat.label}</dt>
+                                    <dd>{stat.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    )
+                }
+            </div>
+
+            {hasVisual && <div class="hero-visual"><slot name="visual" /></div>}
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero {
+        padding: 90px 0 80px;
+        background:
+            radial-gradient(circle at 80% 20%, rgb(0 198 255 / 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 20% 80%, rgb(0 102 255 / 0.08) 0%, transparent 40%);
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .hero[data-two-column] .hero-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+    }
+
+    .hero[data-align='center'] {
+        text-align: center;
+    }
+
+    .hero[data-align='center'] .hero-subhead,
+    .hero[data-align='center'] .hero-tag {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero[data-align='center'] .hero-ctas,
+    .hero[data-align='center'] .hero-stats {
+        justify-content: center;
+    }
+
+    .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        padding: 6px 16px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 30px;
+        color: var(--color-primary);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    h1 {
+        margin-bottom: 24px;
+        font-size: 50px;
+        line-height: 1.15;
+    }
+
+    .hero-subhead {
+        max-width: 580px;
+        margin-bottom: 36px;
+        color: var(--text-body);
+        font-size: 18px;
+    }
+
+    .hero-ctas {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 32px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    .hero-stat dt {
+        order: 2;
+        color: var(--text-body);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .hero-stat dd {
+        margin: 0;
+        color: var(--color-dark);
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    @media (max-width: 868px) {
+        .hero {
+            padding: 50px 0;
+        }
+
+        .hero-grid,
+        .hero[data-two-column] .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        h1 {
+            font-size: 34px;
+        }
+
+        .hero-subhead {
+            font-size: 16px;
+        }
+
+        .hero-ctas {
+            flex-direction: column;
+        }
+
+        .hero-ctas .btn {
+            width: 100%;
+        }
+
+        .hero-stats {
+            gap: 16px;
+            justify-content: space-between;
+        }
+
+        .hero-stat dd {
+            font-size: 22px;
+        }
+
+        .hero-stat dt {
+            font-size: 11px;
+        }
+    }
+</style>

@@ -1,0 +1,85 @@
+---
+/**
+ * Renders everything in <head> that search engines and social cards care about:
+ * title, description, canonical URL, Open Graph, favicon, optional JSON-LD,
+ * and an optional Cloudflare Turnstile script.
+ *
+ * Use standalone if you have your own document shell; BaseLayout.astro composes it.
+ */
+import { absoluteUrl, toJsonLdArray, type ImageSource, type SiteConfig } from './types';
+
+interface Props {
+    site: SiteConfig;
+    /** Page title. Use `{title}` / `{site}` tokens in `titleTemplate`. */
+    title: string;
+    description?: string;
+    /** Overrides site.ogImage. */
+    ogImage?: ImageSource;
+    noindex?: boolean;
+    /** Page-level Schema.org objects, merged after site.jsonLd. */
+    jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+    /** Set true only on pages that render a Turnstile widget. */
+    turnstile?: boolean;
+    /** Defaults to "{title} | {site}". Pass "{title}" to suppress the suffix. */
+    titleTemplate?: string;
+}
+
+const {
+    site,
+    title,
+    description,
+    ogImage,
+    noindex = false,
+    jsonLd,
+    turnstile = false,
+    titleTemplate = '{title} | {site}',
+} = Astro.props;
+
+const metaDescription = description ?? site.description ?? '';
+const pageTitle = titleTemplate.replace('{title}', title).replace('{site}', site.name);
+const canonical = new URL(Astro.url.pathname, site.domain).href;
+const socialImage = ogImage ?? site.ogImage;
+const socialImageUrl = socialImage ? absoluteUrl(socialImage, site.domain) : undefined;
+const schemas = [...toJsonLdArray(site.jsonLd), ...toJsonLdArray(jsonLd)];
+
+const favicon = site.favicon ?? '/favicon.svg';
+const faviconType = favicon.endsWith('.svg')
+    ? 'image/svg+xml'
+    : favicon.endsWith('.png')
+      ? 'image/png'
+      : 'image/webp';
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{pageTitle}</title>
+{metaDescription && <meta name="description" content={metaDescription} />}
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+{!noindex && <meta name="robots" content="index, follow" />}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={pageTitle} />
+{metaDescription && <meta property="og:description" content={metaDescription} />}
+<meta property="og:url" content={canonical} />
+{socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
+{socialImageUrl && <meta property="og:image:alt" content={`${site.name} logo`} />}
+<meta name="twitter:card" content={socialImageUrl ? 'summary_large_image' : 'summary'} />
+
+{site.themeColor && <meta name="theme-color" content={site.themeColor} />}
+<link rel="icon" type={faviconType} href={favicon} />
+
+{turnstile && (
+    <script
+        is:inline
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        async
+        defer></script>
+)}
+
+{schemas.map((schema) => (
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+))}
+
+<slot name="extra" />

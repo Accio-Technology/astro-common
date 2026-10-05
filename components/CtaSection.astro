@@ -1,0 +1,99 @@
+---
+/**
+ * Closing call-to-action band. Dark by default; slot the contact form (or any
+ * buttons) inside it.
+ *
+ * Also re-themes inherited form field tokens, so a slotted ContactForm picks up
+ * dark-appropriate inputs without needing to know it is inside a banner.
+ */
+import '../styles/theme.css';
+
+interface Props {
+    id?: string;
+    title: string;
+    subhead?: string;
+    tone?: 'dark' | 'brand' | 'light';
+}
+
+const { id = 'contact', title, subhead, tone = 'dark' } = Astro.props;
+---
+
+<section class="cta" id={id} data-tone={tone}>
+    <div class="container">
+        <h2>{title}</h2>
+        {subhead && <p>{subhead}</p>}
+        <slot />
+    </div>
+</section>
+
+<style>
+    .cta {
+        position: relative;
+        padding: 80px 0;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .cta[data-tone='dark'] {
+        background: var(--gradient-dark);
+        color: var(--text-on-dark);
+    }
+
+    .cta[data-tone='brand'] {
+        background: var(--gradient-brand);
+        color: var(--text-on-dark);
+    }
+
+    .cta[data-tone='light'] {
+        background: var(--bg-surface);
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    h2 {
+        max-width: 800px;
+        margin: 0 auto 16px;
+        font-size: 40px;
+    }
+
+    .cta[data-tone='dark'] h2,
+    .cta[data-tone='brand'] h2 {
+        color: var(--text-on-dark);
+    }
+
+    p {
+        max-width: 600px;
+        margin: 0 auto 36px;
+        color: var(--text-muted);
+        font-size: 18px;
+    }
+
+    /* Re-theme slotted form controls for dark surfaces */
+    .cta[data-tone='dark'],
+    .cta[data-tone='brand'] {
+        --form-field-bg: rgb(255 255 255 / 0.07);
+        --form-field-border: rgb(255 255 255 / 0.15);
+        --form-label-color: #cbd5e1;
+        --form-placeholder: #64748b;
+        --form-text: #ffffff;
+        --form-ok-bg: rgb(34 197 94 / 0.15);
+        --form-ok-border: rgb(34 197 94 / 0.3);
+        --form-ok-text: #86efac;
+        --form-err-bg: rgb(239 68 68 / 0.15);
+        --form-err-border: rgb(239 68 68 / 0.3);
+        --form-err-text: #fca5a5;
+    }
+
+    @media (max-width: 868px) {
+        .cta {
+            padding: 60px 0;
+        }
+
+        h2 {
+            font-size: 28px;
+        }
+
+        p {
+            font-size: 16px;
+        }
+    }
+</style>

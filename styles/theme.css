@@ -1,0 +1,257 @@
+/* =========================================================
+   astro-common — theme.css
+   Design tokens, reset, and a small set of global utilities.
+   Loaded automatically by BaseLayout.astro.
+
+   REBRANDING: override any token in your site's own stylesheet.
+     @layer site {
+       :root { --color-primary: #B45309; --color-accent: #F59E0B; }
+     }
+   ========================================================= */
+
+:root {
+    /* Brand */
+    --color-primary: #0066ff;
+    --color-accent: #00c6ff;
+    --color-dark: #0b192c;
+    --color-dark-surface: #1e293b;
+    --gradient-brand: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
+    --gradient-dark: linear-gradient(180deg, #0b192c 0%, #080f1a 100%);
+
+    /* Text */
+    --text-strong: #0f172a;
+    --text-body: #475569;
+    --text-muted: #94a3b8;
+    --text-on-dark: #f8fafc;
+
+    /* Surfaces */
+    --bg-page: #f8fafc;
+    --bg-surface: #ffffff;
+    --border-subtle: #e2e8f0;
+
+    /* Status */
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+
+    /* Semantic comparison tones (Comparison.astro, badged cards) */
+    --tone-positive-text: #0369a1;
+    --tone-positive-surface: #e0f2fe;
+    --tone-positive-border: #bae6fd;
+    --tone-negative-text: #991b1b;
+    --tone-negative-surface: #fff5f5;
+    --tone-negative-border: #fecdd3;
+    --tone-warning-text: #b45309;
+    --tone-warning-surface: #fef3c7;
+    --tone-neutral-text: #475569;
+    --tone-neutral-surface: #e2e8f0;
+
+    /* Form fields — ContactForm consumes these. Dark containers such as
+       CtaSection.astro override them so slotted forms re-theme automatically. */
+    --form-field-bg: #ffffff;
+    --form-field-border: var(--border-subtle);
+    --form-label-color: var(--text-body);
+    --form-placeholder: #94a3b8;
+    --form-text: var(--text-strong);
+    --form-ok-bg: rgb(34 197 94 / 0.12);
+    --form-ok-border: rgb(34 197 94 / 0.35);
+    --form-ok-text: #166534;
+    --form-err-bg: rgb(239 68 68 / 0.12);
+    --form-err-border: rgb(239 68 68 / 0.35);
+    --form-err-text: #991b1b;
+
+    /* Typography */
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+        sans-serif;
+
+    /* Shape */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    /* Layout */
+    --container-max: 1200px;
+    --container-gutter: 24px;
+    --section-padding: 100px;
+
+    /* Effects */
+    --shadow-card: 0 20px 25px -5px rgba(0, 102, 255, 0.08), 0 8px 10px -6px rgba(0, 102, 255, 0.05);
+    --shadow-raised: 0 25px 50px -12px rgba(11, 25, 44, 0.25);
+
+    /* Breakpoints (documentational — media queries are literal) */
+    --breakpoint-mobile: 868px;
+}
+
+/* ---------- Reset ---------- */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-strong);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-strong);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+img,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ---------- Global utilities ----------
+   Deliberately few, deliberately global. Components never redefine
+   these class names in their scoped <style> blocks. */
+
+.container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-gutter);
+}
+
+.gradient-text {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease;
+}
+
+.btn-primary {
+    background: var(--gradient-brand);
+    box-shadow: 0 10px 20px -5px rgba(0, 102, 255, 0.3);
+    color: var(--bg-surface);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(0, 102, 255, 0.4);
+}
+
+.btn-secondary {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: var(--color-primary);
+}
+
+.btn-secondary:hover {
+    background: #dbeafe;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn:disabled:hover {
+    transform: none;
+}
+
+.section-header {
+    max-width: 700px;
+    margin: 0 auto 60px;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 38px;
+    margin-bottom: 16px;
+}
+
+.section-header p {
+    color: var(--text-body);
+    font-size: 17px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 868px) {
+    :root {
+        --container-gutter: 16px;
+        --section-padding: 64px;
+    }
+
+    .section-header h2 {
+        font-size: 28px;
+    }
+}

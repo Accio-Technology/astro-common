@@ -1,0 +1,225 @@
+---
+/**
+ * Sticky site header: logo, nav links, optional CTA, and a mobile hamburger
+ * driven by scripts/nav.ts via data attributes.
+ */
+import { Image } from 'astro:assets';
+import '../styles/theme.css';
+import type { Cta, ImageSource, NavLink } from './types';
+
+interface Props {
+    /** An `astro:assets` import (optimized) or a plain path string. */
+    logo: ImageSource;
+    logoAlt: string;
+    logoHref?: string;
+    navLinks?: NavLink[];
+    cta?: Cta;
+    /** Logo box height. Tune per brand; 44px suits most wordmarks. */
+    logoHeight?: string;
+    /** Skip the mobile CTA duplicate inside the panel. */
+    showMobileCta?: boolean;
+}
+
+const {
+    logo,
+    logoAlt,
+    logoHref = '/',
+    navLinks = [],
+    cta,
+    logoHeight = '44px',
+    showMobileCta = true,
+} = Astro.props;
+
+const logoStyle = `height: ${logoHeight}; width: auto;`;
+---
+
+<header class="site-header">
+    <div class="container">
+        <nav class="site-nav" aria-label="Main">
+            <a href={logoHref} class="logo">
+                {
+                    typeof logo === 'string' ? (
+                        <img src={logo} alt={logoAlt} class="logo-img" style={logoStyle} />
+                    ) : (
+                        <Image
+                            src={logo}
+                            alt={logoAlt}
+                            class="logo-img"
+                            style={logoStyle}
+                            width={480}
+                            height={260}
+                            loading="eager"
+                            decoding="sync"
+                        />
+                    )
+                }
+            </a>
+
+            <button
+                type="button"
+                class="nav-toggle"
+                data-nav-toggle
+                aria-label="Toggle navigation menu"
+                aria-expanded="false"
+                aria-controls="site-nav-panel">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path data-nav-icon d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <ul class="nav-links" id="site-nav-panel" data-nav-panel>
+                {
+                    navLinks.map((link) => (
+                        <li>
+                            <a
+                                href={link.href}
+                                target={link.external ? '_blank' : undefined}
+                                rel={link.external ? 'noopener noreferrer' : undefined}>
+                                {link.label}
+                            </a>
+                        </li>
+                    ))
+                }
+                {
+                    cta && showMobileCta && (
+                        <li class="nav-mobile-cta">
+                            <a
+                                href={cta.href}
+                                class={`btn btn-${cta.variant ?? 'primary'}`}
+                                target={cta.external ? '_blank' : undefined}
+                                rel={cta.external ? 'noopener noreferrer' : undefined}>
+                                {cta.label}
+                            </a>
+                        </li>
+                    )
+                }
+            </ul>
+
+            {
+                cta && (
+                    <a
+                        href={cta.href}
+                        class={`btn btn-${cta.variant ?? 'primary'} nav-desktop-cta`}
+                        target={cta.external ? '_blank' : undefined}
+                        rel={cta.external ? 'noopener noreferrer' : undefined}>
+                        {cta.label}
+                    </a>
+                )
+            }
+        </nav>
+    </div>
+</header>
+
+<style>
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgb(255 255 255 / 0.98);
+        border-bottom: 1px solid var(--border-subtle);
+        backdrop-filter: blur(12px);
+    }
+
+    .site-nav {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 80px;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .logo-img {
+        max-width: 100%;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        list-style: none;
+    }
+
+    .nav-links a:not(.btn) {
+        color: var(--text-body);
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .nav-links a:not(.btn):hover {
+        color: var(--color-primary);
+    }
+
+    .nav-toggle {
+        display: none;
+        padding: 8px;
+        border: none;
+        background: none;
+        color: var(--color-dark);
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .nav-toggle svg {
+        width: 28px;
+        height: 28px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+    }
+
+    .nav-mobile-cta {
+        display: none;
+    }
+
+    @media (max-width: 868px) {
+        .nav-toggle {
+            display: block;
+        }
+
+        .nav-desktop-cta {
+            display: none;
+        }
+
+        .nav-links {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 20px;
+            width: 100%;
+            max-height: calc(100dvh - 80px);
+            padding: 24px;
+            overflow-y: auto;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            box-shadow: 0 15px 30px rgb(0 0 0 / 0.12);
+            text-align: center;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-links[data-open] {
+            display: flex;
+        }
+
+        .nav-mobile-cta {
+            display: block;
+        }
+
+        .nav-mobile-cta .btn {
+            width: 100%;
+            margin-top: 8px;
+        }
+    }
+</style>

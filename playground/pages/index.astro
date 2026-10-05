@@ -1,0 +1,208 @@
+---
+/**
+ * Component gallery. Renders every component with sample data so regressions in
+ * styling or props are visible at a glance.
+ *
+ *   npm run dev     # then open the printed local URL
+ */
+import BaseLayout from '../../components/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import Services from '../../components/Services.astro';
+import Solutions from '../../components/Solutions.astro';
+import Comparison from '../../components/Comparison.astro';
+import Faq from '../../components/Faq.astro';
+import CtaSection from '../../components/CtaSection.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import Icon from '../../components/Icon.astro';
+import type { SiteConfig } from '../../components/types';
+
+const logo = `data:image/svg+xml,${encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 32"><rect width="120" height="32" rx="6" fill="#0b192c"/><text x="60" y="21" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">ACME CO</text></svg>',
+)}`;
+
+const site: SiteConfig = {
+    name: 'Acme Plumbing',
+    legalName: 'Acme Plumbing LLC',
+    domain: 'https://example.com',
+    tagline: 'Fast, local, and honestly priced.',
+    description: 'Placeholder description used when a page does not supply its own.',
+    themeColor: '#0066ff',
+    contact: { email: 'hello@example.com', phone: '(555) 010-0100' },
+    nav: [
+        { href: '#services', label: 'Services' },
+        { href: '#compare', label: 'Why Us' },
+        { href: '#faq', label: 'FAQ' },
+    ],
+    social: [{ label: 'Facebook', href: 'https://facebook.com' }],
+};
+
+const navLinks = site.nav ?? [];
+---
+
+<BaseLayout
+    {site}
+    title="Component gallery"
+    description="Every astro-common component rendered with sample data."
+    header={{ logo, logoAlt: site.name, navLinks, cta: { href: '#contact', label: 'Get a Quote' } }}
+    footer={{
+        businessName: site.legalName ?? site.name,
+        tagline: site.tagline,
+        columns: [{ heading: 'Services', links: navLinks }],
+        social: site.social,
+    }}>
+    <Hero
+        id="top"
+        tag="⚡ Same-day service"
+        title="A headline that wraps across a couple of lines."
+        subhead="Supporting copy sits here and is constrained to a comfortable measure so it stays readable."
+        primaryCta={{ href: '#contact', label: 'Book Now' }}
+        secondaryCta={{ href: '#services', label: 'See Services' }}
+        stats={[
+            { value: '20+', label: 'Years in business' },
+            { value: '4.9', label: 'Average rating' },
+            { value: '24h', label: 'Response time' },
+        ]}>
+        <div slot="visual" class="demo-card">
+            <h3>Visual slot</h3>
+            <p>Anything you put in the <code>visual</code> slot lands in the right column.</p>
+        </div>
+    </Hero>
+
+    <Services
+        id="services"
+        title="Services"
+        subtitle="Icon names from the built-in registry render as SVGs; anything else renders as text."
+        items={[
+            { icon: 'bolt', title: 'Emergency callouts', text: 'Fast response when it matters most.' },
+            { icon: '1', title: 'Text icons still work', text: 'A plain number or short label renders as-is.' },
+            { icon: 'shield', title: 'Licensed and insured', text: 'Documentation available on request.' },
+        ]} />
+
+    <Solutions
+        id="solutions"
+        title="Two ways to work together"
+        subtitle="Cards can carry a badge, a bullet list, and their own call to action."
+        items={[
+            {
+                badge: 'Most popular',
+                badgeTone: 'info',
+                title: 'One-off repair',
+                text: 'For a single problem that needs fixing this week.',
+                bullets: ['Upfront pricing', 'Same-week availability'],
+                cta: { href: '#contact', label: 'Book a repair', variant: 'secondary' },
+            },
+            {
+                badge: 'Save 20%',
+                badgeTone: 'warning',
+                title: 'Planned maintenance',
+                text: 'Ongoing cover that stops small faults becoming large ones.',
+                bullets: ['Annual inspection', 'Priority callouts', 'No call-out fee'],
+                cta: { href: '#contact', label: 'Start a plan', variant: 'primary' },
+            },
+        ]} />
+
+    <Comparison
+        id="compare"
+        title="Compare the options"
+        subtitle="Tone drives the colour treatment, so nothing brand-specific is baked in."
+        left={{
+            heading: '❌ Hiring a large agency',
+            tone: 'negative',
+            items: ['Long onboarding cycles', 'Monthly retainer regardless of need', 'Junior staff on your account'],
+        }}
+        right={{
+            heading: 'Working directly',
+            tone: 'positive',
+            items: ['One point of contact', 'Pay per job, no retainer', 'The person who quotes does the work'],
+        }} />
+
+    <Faq
+        id="faq"
+        title="Frequently asked questions"
+        items={[
+            { q: 'Do you offer emergency callouts?', a: 'Yes, subject to current availability.' },
+            { q: 'Is the quoted price fixed?', a: 'Yes, unless you ask for extra work after we arrive.' },
+            { q: 'Do you cover the whole county?', a: 'We cover the city and most surrounding towns.' },
+        ]}
+        emitJsonLd />
+
+    <CtaSection
+        id="contact"
+        title="Ready to get started?"
+        subhead="Tell us what you need and we will come back with a fixed price.">
+        <ContactForm id="demo" subjectPlaceholder="What do you need?" />
+    </CtaSection>
+
+    <section class="demo-section">
+        <div class="container">
+            <h2>Icon set</h2>
+            <div class="demo-icons">
+                {
+                    [
+                        'check',
+                        'x',
+                        'arrow-right',
+                        'phone',
+                        'mail',
+                        'map-pin',
+                        'clock',
+                        'star',
+                        'bolt',
+                        'shield',
+                        'globe',
+                        'users',
+                        'sparkle',
+                        'pencil',
+                        'credit-card',
+                    ].map((name) => (
+                        <span class="demo-icon">
+                            <Icon name={name} size={22} />
+                            <small>{name}</small>
+                        </span>
+                    ))
+                }
+            </div>
+        </div>
+    </section>
+
+    <script>
+        import '../../scripts/index';
+    </script>
+
+    <style>
+        .demo-card {
+            padding: 32px;
+            background: var(--color-dark);
+            border-radius: var(--radius-xl);
+            color: var(--text-on-dark);
+        }
+
+        .demo-card h3 {
+            margin-bottom: 12px;
+            color: var(--text-on-dark);
+        }
+
+        .demo-section {
+            padding: 60px 0;
+            background: var(--bg-surface);
+        }
+
+        .demo-icons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 20px;
+        }
+
+        .demo-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-body);
+        }
+
+        .demo-icon small {
+            font-size: 11px;
+        }
+    </style>
+</BaseLayout>
