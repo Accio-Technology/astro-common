@@ -20,6 +20,8 @@ interface HeaderSlot {
     /** Falls back to site.nav when omitted. */
     navLinks?: NavLink[];
     cta?: Cta;
+    /** Logo box height. Tune per brand; 44px suits most wordmarks. */
+    logoHeight?: string;
 }
 
 interface FooterSlot {
@@ -62,6 +64,7 @@ const { site, header = null, footer = null, bodyClass, ...seo } = Astro.props;
                     logoHref={header.logoHref}
                     navLinks={header.navLinks ?? site.nav ?? []}
                     cta={header.cta}
+                    logoHeight={header.logoHeight}
                 />
             )
         }
