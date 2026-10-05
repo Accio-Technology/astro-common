@@ -32,7 +32,7 @@ const twoColumn = hasVisual && align === 'left';
             <div class="hero-copy">
                 {tag && <p class="hero-tag">{tag}</p>}
                 <h1>{title}</h1>
-                {subhead && <p class="hero-subhead">{subhead}</p>}
+                {subhead && <p class="hero-subhead" set:html={subhead} />}
 
                 {
                     (primaryCta || secondaryCta) && (
