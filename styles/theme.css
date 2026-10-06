@@ -3,10 +3,12 @@
    Design tokens, reset, and a small set of global utilities.
    Loaded automatically by BaseLayout.astro.
 
-   REBRANDING: override any token in your site's own stylesheet.
-     @layer site {
-       :root { --color-primary: #B45309; --color-accent: #F59E0B; }
-     }
+   REBRANDING: override any token from your site's own stylesheet, on a
+   descendant of :root so the declaration beats the inherited value no
+   matter how the stylesheets are ordered:
+     body { --color-primary: #B45309; --color-accent: #F59E0B; }
+   Do not wrap overrides in @layer: these tokens are unlayered, and
+   unlayered declarations outrank layered ones at the same specificity.
    ========================================================= */
 
 :root {

@@ -179,13 +179,16 @@ favicon, JSON-LD, optional Turnstile script. Use directly if you have your own
 | `social` | `SocialLink[]` | |
 | `showYear` | `boolean` | Default `true` |
 
+The copyright line and tagline share one row (copyright left, tagline right)
+when no `columns` are supplied; they stack and centre on mobile.
+
 ### `Hero.astro`
 
 | Prop | Type | Notes |
 | --- | --- | --- |
 | `title` | `string` | Required |
 | `tag` | `string` | Pill above the headline |
-| `subhead` | `string` | |
+| `subhead` | `string` | May contain inline HTML, e.g. `<strong>` |
 | `primaryCta` / `secondaryCta` | `Cta` | |
 | `stats` | `Stat[]` | `{ value, label }` |
 | `align` | `'left' \| 'center'` | Default `'left'` |
@@ -213,7 +216,9 @@ arbitrary text, matching `FeatureItem.icon`.
 Two-column comparison. `title`, `left`, `right` required; `subtitle`, `id`
 optional. Each side is `{ heading, tone, items, highlight? }`, where `tone` is
 `'positive' | 'negative'` and drives colour plus the check/cross marker.
-`highlight` defaults to `true` for the positive side.
+`highlight` defaults to `true` for the positive side. `heading` and `items` may
+contain inline HTML (e.g. `<strong>`); the gradient heading treatment is applied
+to the positive side only.
 
 ### `Faq.astro`
 
@@ -276,18 +281,24 @@ nothing rather than throwing. Add more in `components/icons/registry.ts`.
 `.section-header`, `.gradient-text`, `.visually-hidden`). Components never
 redefine those class names, so overriding them is safe.
 
-Rebrand by overriding tokens in the site's own stylesheet, loaded after the
-library's:
+Rebrand by overriding tokens in your own stylesheet. Set them on a *descendant*
+of `:root` (e.g. `body` or your layout's body class): an element's own custom
+property declaration always beats the value it would otherwise inherit, so the
+override wins regardless of stylesheet load order:
 
 ```css
-/* src/styles/site.css */
-:root {
+/* src/styles/theme.css */
+body {
     --color-primary: #b45309;
     --color-accent: #f59e0b;
     --gradient-brand: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
     --radius-lg: 4px;
 }
 ```
+
+Do **not** wrap the override in `@layer`: the library's tokens are unlayered,
+and unlayered declarations outrank layered ones at the same specificity, so a
+layered override would silently lose.
 
 `BaseLayout` imports `theme.css`. If you use components without it, import
 `@common/styles/theme.css` yourself.

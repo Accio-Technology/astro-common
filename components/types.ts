@@ -87,9 +87,10 @@ export interface SolutionCard {
 }
 
 export interface ComparisonSide {
+    /** May contain inline HTML (e.g. `<strong>`) for emphasis. */
     heading: string;
     tone: 'positive' | 'negative';
-    /** Plain strings. Inline <strong> is not interpreted. */
+    /** Strings; each may contain inline HTML (e.g. `<strong>`). */
     items: string[];
     highlight?: boolean;
 }

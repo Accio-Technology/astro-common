@@ -3,7 +3,8 @@
  * Two-column comparison, e.g. "old way vs your way".
  *
  * Fully brand-agnostic: tone drives the color treatment, so there is no baked-in
- * competitor name or company name to strip out before reusing.
+ * competitor name or company name to strip out before reusing. Side headings and
+ * items may contain inline HTML (e.g. <strong>) for emphasis.
  */
 import '../styles/theme.css';
 import Icon from './Icon.astro';
@@ -36,12 +37,12 @@ const sides = [
             {
                 sides.map(({ side, marker }) => (
                     <div class="comparison-card" data-tone={side.tone} data-highlight={side.highlight ?? side.tone === 'positive' ? '' : undefined}>
-                        <h3 class="gradient-text">{side.heading}</h3>
+                        <h3 class={side.tone === 'positive' ? 'gradient-text' : undefined} set:html={side.heading} />
                         <ul>
                             {side.items.map((item) => (
                                 <li>
                                     <Icon name={marker} size={16} strokeWidth={3} />
-                                    <span>{item}</span>
+                                    <span set:html={item} />
                                 </li>
                             ))}
                         </ul>

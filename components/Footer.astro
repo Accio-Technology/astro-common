@@ -92,7 +92,12 @@ const { businessName, tagline, columns = [], social = [], showYear = true } = As
     }
 
     .footer-brand {
+        display: flex;
         flex: 1 1 260px;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px 32px;
     }
 
     .footer-column h4 {
@@ -142,6 +147,13 @@ const { businessName, tagline, columns = [], social = [], showYear = true } = As
             flex-direction: column;
             gap: 24px;
             text-align: center;
+        }
+
+        .footer-brand {
+            flex-direction: column;
+            flex: none;
+            align-items: center;
+            gap: 12px;
         }
 
         .footer-social {
